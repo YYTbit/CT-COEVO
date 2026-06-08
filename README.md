@@ -434,12 +434,3 @@ python3 -m json.tool ct_coevo/state/global/toolkit/toolkit_items.json
 ## 📄 License
 
 This project is licensed under the **MIT License**. See [LICENSE](LICENSE) for details.
-
----
-
-<div align="center">
-
-**[Paper](https://arxiv.org/abs/xxxx.xxxxx)** ·
-**[Code](https://github.com/YYTbit/CT-COEVO)**
-
-</div>
