@@ -1,5 +1,3 @@
-TOOL_OUTPUT_MAX_CHARS = 500000  # Global: max chars for tool output (user specified 500000)
-
 """
 agent.py — CT-COEVO Agent
 
@@ -44,6 +42,7 @@ from .prompts import (
     build_post_task_audit_prompt,
 )
 
+TOOL_OUTPUT_MAX_CHARS = 50000
 
 class CTCoEvoAgent:
     """
