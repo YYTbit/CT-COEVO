@@ -1,13 +1,9 @@
 """
 runner.py — CLI entry point for CT-COEVO.
 
-Strictly follows the paper:
-  - EvoSet (34 datasets, 1997-2010): evolution split, memory/tools EVOLVE
-  - EvalSet (49 datasets, 2012-2025): evaluation split, memory/tools FROZEN
-
 Usage:
-    python runner.py --mode evo --dataset ml_1m --api-key sk-xxx
-    python runner.py --mode eval --dataset airbnb_recruiting_new_user_bookings --api-key sk-xxx
+    python runner.py --mode evo --dataset <evoset_dataset> --api-key sk-xxx
+    python runner.py --mode eval --dataset <evalset_dataset> --api-key sk-xxx
 """
 
 import argparse
