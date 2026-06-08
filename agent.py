@@ -71,21 +71,21 @@ class CTCoEvoAgent:
         # Paths
         ts = datetime.now().strftime('%Y%m%d_%H%M%S')
         run_tag = f"{dataset_name}-{ts}"
-        self.log_dir = Path(log_dir) if log_dir else Path(f"/data/yangyingtao02/ct_coevo/log/{run_tag}")
+        self.log_dir = Path(log_dir) if log_dir else Path(f"./ct_coevo/log/{run_tag}")
         self.log_dir.mkdir(parents=True, exist_ok=True)
 
         # Workspace isolation: copy public files to workspace
-        self.workspace_dir = Path(workspace_dir) if workspace_dir else Path(f"/data/yangyingtao02/ct_coevo/workspace/{run_tag}")
+        self.workspace_dir = Path(workspace_dir) if workspace_dir else Path(f"./ct_coevo/workspace/{run_tag}")
         self.workspace_dir.mkdir(parents=True, exist_ok=True)
         self._setup_workspace()
 
         # Global state (read-only reference)
-        self.global_state_dir = Path(state_dir) if state_dir else Path(f"/data/yangyingtao02/ct_coevo/state/global")
+        self.global_state_dir = Path(state_dir) if state_dir else Path(f"./ct_coevo/state/global")
         global_memory_dir = self.global_state_dir / "memory"
         global_toolkit_dir = self.global_state_dir / "toolkit"
 
         # Local state (per-task working copy)
-        state_base = Path(f"/data/yangyingtao02/ct_coevo/state/{run_tag}")
+        state_base = Path(f"./ct_coevo/state/{run_tag}")
         memory_dir = state_base / "memory"
         toolkit_dir = state_base / "toolkit"
 
