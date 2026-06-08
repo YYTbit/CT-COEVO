@@ -1,0 +1,12 @@
+# Core dependencies for CT-COEVO framework
+openai>=1.0.0
+pandas>=1.5.0
+numpy>=1.21.0
+
+# Optional: used by agent-generated training code
+# Install these if you want the agent to use GPU-based models
+# torch>=2.0.0
+# lightgbm>=3.3.0
+# xgboost>=1.6.0
+# implicit>=0.6.0
+# scikit-learn>=1.0.0

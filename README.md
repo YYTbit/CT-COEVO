@@ -25,7 +25,6 @@
 - [Architecture Details](#-architecture-details)
 - [Benchmark Suites](#-benchmark-suites)
 - [Reproducibility](#-reproducibility)
-- [Citation](#-citation)
 
 ---
 
@@ -114,8 +113,8 @@ ct_coevo/
 ### Step 1: Clone Repository
 
 ```bash
-git clone https://github.com/your-org/ct-coevo.git
-cd ct-coevo
+git clone https://github.com/YYTbit/CT-COEVO.git
+cd CT-COEVO
 ```
 
 ### Step 2: Create Conda Environment
@@ -128,22 +127,15 @@ conda activate CT-COEVO
 ### Step 3: Install Dependencies
 
 ```bash
-pip install openai pandas numpy scikit-learn torch lightgbm xgboost implicit
+pip install -r requirements.txt
 ```
 
-### Step 4: Install Benchmark Suites
+> **Note**: The core framework only requires `openai`, `pandas`, `numpy`. If you want the agent to generate GPU-based training code (PyTorch, LightGBM, etc.), install the optional dependencies listed in `requirements.txt`.
+
+### Step 4: Set PYTHONPATH
 
 ```bash
-# Install benchmark packages
-cd RECDEVBENCH && pip install -e . && cd ..
-cd RECGYM && pip install -e . && cd ..
-cd new-rec-bench && pip install -e . && cd ..
-```
-
-### Step 5: Set PYTHONPATH
-
-```bash
-export PYTHONPATH=/path/to/parent/dir:$PYTHONPATH
+export PYTHONPATH=/path/to/CT-COEVO/..:$PYTHONPATH
 ```
 
 ---
