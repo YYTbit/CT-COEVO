@@ -13,7 +13,7 @@
 
 <br>
 
-![CT-COEVO Overview](docs/overview.pdf)
+<img src="docs/overview.png" alt="CT-COEVO Overview" width="90%">
 
 <p><i>
 Existing agents lack recommendation-specific toolsets and domain knowledge, causing them to struggle on recommendation tasks.
@@ -62,9 +62,7 @@ This enables the agent to improve over time: lessons learned on early tasks dire
 ## 🏗️ Architecture
 
 <div align="center">
-
-![CT-COEVO Architecture](docs/architecture.pdf)
-
+<img src="docs/architecture.png" alt="CT-COEVO Architecture" width="85%">
 </div>
 
 <br>
@@ -125,9 +123,12 @@ CT-COEVO/
 │   └── evolution_loop.py       #   Long-run evolution engine
 │
 ├── docs/                       # Paper figures
-│   ├── overview.pdf            #   Figure 1: Motivation
-│   ├── architecture.pdf        #   Figure 2: Architecture
-│   └── bench_split.pdf         #   Figure 3: Benchmark category distribution
+│   ├── overview.pdf            #   Figure 1: Motivation (vector)
+│   ├── overview.png            #   Figure 1: Motivation (display)
+│   ├── architecture.pdf        #   Figure 2: Architecture (vector)
+│   ├── architecture.png        #   Figure 2: Architecture (display)
+│   ├── bench_split.pdf         #   Figure 3: Benchmark (vector)
+│   └── bench_split.png         #   Figure 3: Benchmark (display)
 │
 ├── requirements.txt            # Python dependencies
 ├── LICENSE                     # MIT License
@@ -349,11 +350,9 @@ The agent communicates with tools via JSON:
 The agent is evaluated on **83 recommendation competition datasets** spanning 5 task categories.
 
 <div align="center">
-
-![Benchmark Category Distribution](docs/bench_split.pdf)
-
+<img src="docs/bench_split.png" alt="Benchmark Category Distribution" width="70%">
+<br>
 <i>Category distribution of RecDevBench.</i>
-
 </div>
 
 - **EvoSet** (34 datasets, 1997–2010): Classical recommendation datasets for agent evolution
