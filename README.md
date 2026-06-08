@@ -2,359 +2,152 @@
 
 # 🧬 CT-COEVO
 
-### An Autonomous Agent for Recommender System Design via Context-Tool Co-Evolution
+**An Autonomous Agent for Recommender System Design via Context-Tool Co-Evolution**
 
-<p>
-<strong>CT-COEVO</strong> is an autonomous LLM-based agent that co-evolves its <em>contextual memory</em> (M) and <em>algorithmic toolkit</em> (K) across recommendation tasks to achieve state-of-the-art performance — without human intervention.
-</p>
+<br>
 
-<img src="docs/framework.png" alt="CT-COEVO Framework" width="90%">
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10+-3776AB.svg?logo=python&logoColor=white)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-28A745.svg)](LICENSE)
+
+<br>
+
+<img src="docs/framework.png" alt="CT-COEVO Framework" width="85%">
 
 </div>
 
 ---
 
-## 📋 Table of Contents
+## Overview
 
-- [Overview](#-overview)
-- [Key Innovations](#-key-innovations)
-- [Project Structure](#-project-structure)
-- [Installation](#-installation)
-- [Quick Start](#-quick-start)
-- [Running Experiments](#-running-experiments)
-- [Architecture Details](#-architecture-details)
-- [Benchmark Suites](#-benchmark-suites)
-- [Reproducibility](#-reproducibility)
+CT-COEVO is an autonomous LLM-based agent that solves recommender system competitions end-to-end. Its key innovation is **co-evolving** two components across tasks:
+
+- **Contextual Memory (M)** — accumulates transferable heuristics from past experiments
+- **Algorithmic Toolkit (K)** — grows a library of reusable algorithm tools
+
+This enables the agent to improve over time: lessons learned on early tasks directly boost performance on later ones.
+
+### Core Loop (Paper Eq. 1–4)
+
+| Step | Equation | Description |
+|------|----------|-------------|
+| **Extract** | `E_t = Extract(q, o_{t-1}; M)` | Retrieve relevant memories |
+| **Select** | `(τ_t, θ_t) = π(q, E_t; K)` | Choose tool + configuration |
+| **Execute** | `o_t = Experiment(τ_t, θ_t; D)` | Run tool in isolated workspace |
+| **Distill** | `M ← M ∪ {Distill(...)}` | Store results as new memories |
+
+After each task, effective tools are **promoted** to the global toolkit; failed experiments generate **negative heuristics** to prevent repeating mistakes.
 
 ---
 
-## 🎯 Overview
+## Installation
 
-CT-COEVO addresses a fundamental challenge in automated recommender system design: **how to transfer knowledge across diverse recommendation tasks** (CTR prediction, rating prediction, ranking, multi-label classification, sequential recommendation). Unlike existing agents that treat each task in isolation, CT-COEVO maintains and evolves two core components:
+```bash
+# Clone
+git clone https://github.com/YYTbit/CT-COEVO.git
+cd CT-COEVO
 
-| Component | Symbol | Description |
-|-----------|--------|-------------|
-| **Contextual Memory** | M | Hierarchical memory with three types: Experiential (transferable heuristics), Experimental (per-task observations), Execution (per-tool traces) |
-| **Algorithmic Toolkit** | K | Scalable toolkit with four tiers: Base (immutable primitives), Meta (tool-creating operations), Global (reviewed pipelines), Temporary (experimental variants) |
+# Environment
+conda create -n CT-COEVO python=3.10
+conda activate CT-COEVO
 
-The co-evolution follows the paper's core equations:
+# Dependencies
+pip install -r requirements.txt
 
+# Set PYTHONPATH (parent directory of ct_coevo/)
+export PYTHONPATH=/path/to/parent:$PYTHONPATH
 ```
-E_t = Extract(q, o_{t-1}; M)           # Eq. 1: Context extraction
-(τ_t, θ_t) = π(q, E_t; K)              # Eq. 2: Tool selection & configuration
-o_t = Experiment(τ_t, θ_t; D)           # Eq. 3: Execution
-M ← M ∪ {Distill(q, τ_t, θ_t, o_t)}    # Eq. 4: Memory distillation
+
+> **Note**: Core framework requires only `openai`, `pandas`, `numpy`. Install optional deps (`torch`, `lightgbm`, etc.) if you want the agent to generate GPU training code.
+
+---
+
+## Quick Start
+
+### Evolution Mode (EvoSet — 34 datasets)
+
+Build memory and toolkit by running the agent on classical recommendation datasets:
+
+```bash
+python -m ct_coevo.runner \
+    --mode evo \
+    --dataset ml_1m \
+    --api-key YOUR_API_KEY \
+    --api-url https://api.example.com/v1 \
+    --model your-model-name
+```
+
+### Evaluation Mode (EvalSet — 49 datasets)
+
+Test transfer with **frozen** memory and toolkit on recent competitions:
+
+```bash
+python -m ct_coevo.runner \
+    --mode eval \
+    --dataset recsys_2018_spotify \
+    --api-key YOUR_API_KEY \
+    --api-url https://api.example.com/v1 \
+    --model your-model-name
+```
+
+### Run All Datasets
+
+```bash
+python -m ct_coevo.runner --mode evo --dataset all \
+    --api-key YOUR_API_KEY --api-url https://api.example.com/v1 --model your-model-name
 ```
 
 ---
 
-## 💡 Key Innovations
-
-### 1. Context-Tool Co-Evolution
-CT-COEVO **simultaneously evolves** its memory and toolkit. Successful tools get promoted to the global toolkit; failed experiments generate negative heuristics that prevent future mistakes.
-
-### 2. Hierarchical Contextual Memory
-Three-tier memory design enables coarse-to-fine retrieval:
-- **Experiential (Exper.)**: Transferable heuristics distilled across tasks (e.g., "Use pairwise loss for ranking metrics")
-- **Experimental (Expt.)**: Per-task observations (e.g., "LightGBM failed: sparse IDs need embeddings")
-- **Execution (Exec.)**: Per-tool performance traces attached to tool records
-
-### 3. Scalable Algorithmic Toolkit
-Four-tier toolkit enables controlled growth:
-- **Base (K_base)**: Immutable primitives (python, bash)
-- **Meta (K_meta)**: Tool-creating operations (create_tool, edit_tool)
-- **Global (K_global)**: Reviewed, reusable pipelines
-- **Temporary (K_temp)**: Task-scoped experimental variants
-
-### 4. Clean Context Architecture
-Separates stable content (task description, tool definitions) from dynamic content (step history, experience context) to maximize API cache hit rates.
-
----
-
-## 📁 Project Structure
+## Project Structure
 
 ```
 ct_coevo/
-├── agent.py              # Core agent loop (Eq. 1-4)
+├── agent.py              # Core agent loop (Eq. 1–4)
 ├── memory.py             # HierarchicalContextualMemory (M)
 ├── toolkit.py            # ScalableAlgorithmicToolkit (K)
-├── prompts.py            # 11 prompt templates (Listings 1-11)
-├── grader.py             # Grading interface (loads metric.py)
+├── prompts.py            # 11 prompt templates (paper Listings 1–11)
+├── grader.py             # Grading interface (loads metric.py from benchmarks)
 ├── runner.py             # CLI entry point for all 83 datasets
-├── evolution_loop.py     # Long-run evolution engine
-├── state/
-│   └── global/           # Shared evolved state
-│       ├── memory/       # Experiential memory files (.md)
-│       └── toolkit/      # Global tool definitions (.json + .py)
-├── workspace/            # Per-run isolated workspaces
-│   └── {dataset}-{timestamp}/
-│       ├── train.json    # Symlinked from benchmark
-│       ├── test.json
-│       ├── sample_submission.csv
-│       ├── description.md
-│       ├── checkpoint.json
-│       └── tool_*.py     # Generated tool code
-└── log/                  # Per-run logs
-    └── {dataset}-{timestamp}/
-        ├── message_log.jsonl
-        └── results.json
+└── evolution_loop.py     # Long-run evolution engine
 ```
+
+### Memory Types
+
+| Type | Symbol | Role |
+|------|--------|------|
+| Experiential | `Exper.` | Transferable heuristics distilled across tasks |
+| Experimental | `Expt.` | Per-task observations (what was tried, what happened) |
+| Execution | `Exec.` | Per-tool performance traces (appended to tool records) |
+
+### Toolkit Tiers
+
+| Tier | Symbol | Role |
+|------|--------|------|
+| Base | `K_base` | Immutable primitives (`python`, `bash`) |
+| Meta | `K_meta` | Tool-creating operations (`create_tool`, `edit_tool`) |
+| Global | `K_global` | Reviewed, reusable pipelines |
+| Temporary | `K_temp` | Task-scoped experimental variants |
 
 ---
 
-## 🔧 Installation
+## Benchmark
 
-### Prerequisites
+The agent is evaluated on **83 recommendation competition datasets** spanning 5 task categories:
 
-- Python 3.10+
-- CUDA 11.8+ (for GPU training)
-- NVIDIA GPU with ≥24GB VRAM (recommended: 4× RTX 3090)
+| Category | Task | Metric | EvoSet | EvalSet |
+|----------|------|--------|--------|---------|
+| **R&S** | Rating & Scoring | RMSE | 12 | 5 |
+| **CTR** | Click-Through Rate | AUC | 7 | 12 |
+| **Rank** | Ranking | NDCG / Recall | 9 | 10 |
+| **MLC** | Multi-Label Classification | F1 | 3 | 2 |
+| **Seq** | Sequential Recommendation | MRR | 3 | 2 |
 
-### Step 1: Clone Repository
-
-```bash
-git clone https://github.com/YYTbit/CT-COEVO.git
-cd CT-COEVO
-```
-
-### Step 2: Create Conda Environment
-
-```bash
-conda create -n CT-COEVO python=3.10
-conda activate CT-COEVO
-```
-
-### Step 3: Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-> **Note**: The core framework only requires `openai`, `pandas`, `numpy`. If you want the agent to generate GPU-based training code (PyTorch, LightGBM, etc.), install the optional dependencies listed in `requirements.txt`.
-
-### Step 4: Set PYTHONPATH
-
-```bash
-export PYTHONPATH=/path/to/CT-COEVO/..:$PYTHONPATH
-```
-
----
-
-## 🚀 Quick Start
-
-### Single Dataset (Evo Mode)
-
-```bash
-cd /path/to/ct_coevo
-
-python runner.py \
-    --mode evo \
-    --dataset <evoset_dataset_name> \
-    --api-key YOUR_API_KEY \
-    --api-url https://api.example.com/v1 \
-    --model your-model-name \
-    --timeout 86400
-```
-
-### Single Dataset (Eval Mode — Transfer Test)
-
-```bash
-python runner.py \
-    --mode eval \
-    --dataset <evalset_dataset_name> \
-    --api-key YOUR_API_KEY \
-    --api-url https://api.example.com/v1 \
-    --model your-model-name
-```
-
-### All Datasets
-
-```bash
-python runner.py \
-    --mode evo \
-    --dataset all \
-    --api-key YOUR_API_KEY \
-    --api-url https://api.example.com/v1 \
-    --model your-model-name
-```
-
----
-
-## 🧪 Running Experiments
-
-### Phase 1: Evolution (EvoSet)
-
-Evolution runs on **34 classical datasets** (1997–2010) to build memory and toolkit:
-
-```bash
-# Evolution on a single dataset
-python run_evo.sh ml_1m
-
-# Or use the runner directly
-python runner.py --mode evo --dataset ml_1m \
-    --api-key sk-xxx --api-url https://api.example.com/v1 --model deepseek-ai/DeepSeek-V3.2
-```
-
-During evolution:
-- Memory (M) accumulates Experiential heuristics
-- Toolkit (K) grows via `create_tool` and promotes effective tools to Global
-- State persists at `ct_coevo/state/global/`
-
-### Phase 2: Evaluation (EvalSet)
-
-Evaluation runs on **49 recent competition datasets** (2012–2025) with **frozen** memory and toolkit:
-
-```bash
-python runner.py --mode eval \
-    --dataset airbnb_recruiting_new_user_bookings \
-    --api-key sk-xxx --api-url https://api.example.com/v1 --model deepseek-ai/DeepSeek-V3.2
-```
-
-### Checkpoint & Resume
-
-The agent saves checkpoints after each step. To resume a crashed run:
-
-```python
-from ct_coevo import CTCoEvoAgent
-
-agent = CTCoEvoAgent(
-    dataset_name=<dataset_name>,
-    data_dir="/path/to/data/public",
-    api_key="sk-xxx",
-    model="your-model",
-    base_url="https://api.example.com/v1",
-    workspace_dir="/path/to/existing/workspace",  # Resume from checkpoint
-)
-result = agent.run()
-```
-
-### Running in tmux (Recommended for Long Runs)
-
-```bash
-# Create a start script
-cat > start_agent.sh << 'EOF'
-#!/bin/bash
-cd /path/to/ct_coevo
-source /path/to/miniconda3/bin/activate CT-COEVO
-python runner.py --mode evo --dataset ml_1m \
-    --api-key sk-xxx --api-url https://api.example.com/v1 --model deepseek-ai/DeepSeek-V3.2
-EOF
-chmod +x start_agent.sh
-
-# Run in tmux
-tmux new-session -d -s ctcoevo ./start_agent.sh
-
-# Monitor progress
-tmux attach -t ctcoevo
-```
-
----
-
-## 🏗️ Architecture Details
-
-### Agent Loop (Paper Eq. 1–4)
-
-```
-┌─────────────────────────────────────────────────┐
-│                  Agent Loop                      │
-│                                                  │
-│  Step t:                                         │
-│    1. Extract: E_t = Extract(q, o_{t-1}; M)     │
-│       → LLM selects K most relevant memories    │
-│                                                  │
-│    2. Select: (τ_t, θ_t) = π(q, E_t; K)        │
-│       → LLM chooses tool + configuration        │
-│       → Multi-tool parallel call supported       │
-│                                                  │
-│    3. Execute: o_t = Experiment(τ_t, θ_t; D)    │
-│       → Run tool in isolated workspace           │
-│       → review_time controls log return timing   │
-│                                                  │
-│    4. Distill: M ← M ∪ {Distill(...)}           │
-│       → Synthesize Experimental memory           │
-│       → Append Execution trace to tool record    │
-│                                                  │
-│  Post-task:                                      │
-│    - Distill Expt. → Exper. (transferable)       │
-│    - Promote/prune temp tools                    │
-│    - Merge local → global state                  │
-└─────────────────────────────────────────────────┘
-```
-
-### Tool Call Format
-
-The agent outputs JSON arrays for tool selection:
-
-```json
-[
-  {
-    "tool_id": "tool_xxx",
-    "config": {},
-    "name": "deepfm_v1",
-    "code": "import torch\n...",
-    "description": "DeepFM for CTR prediction",
-    "review_time": 1800
-  }
-]
-```
-
-| Field | Required | Description |
-|-------|----------|-------------|
-| `tool_id` | Yes | Target tool ID |
-| `config` | No | Configuration parameters |
-| `name` | For create_tool | Name of new tool |
-| `code` | For create_tool/edit_tool | Python source code |
-| `description` | For create_tool | Tool description |
-| `review_time` | No | Seconds before returning logs. `-1` = wait forever. Default: `-1`. Recommended: `1800` for training. |
-
-### Memory File Format
-
-Each memory item is stored as a markdown file:
-
-```markdown
----
-label: Exper.
-title: Use pairwise loss for ranking metrics
-summary: When the evaluation metric is NDCG or Recall, use BPR loss instead of BCE.
----
-
-## Body
-
-Detailed heuristic body with conditions, actions, and exceptions...
-```
-
-Filename: `{label}_{sanitized_title}.md`
-
----
-
-## 📊 Benchmark Suites
-
-### EvoSet (34 datasets, 1997–2010)
-
-| Category | Datasets | Metric |
-|----------|----------|--------|
-| R&S (Rating & Scoring) | ml_1m, netflix, book_crossing, douban_movie, ... | RMSE |
-| CTR (Click-Through Rate) | digg2009, ml_1m_binary, netflix_binary, ... | AUC |
-| MLC (Multi-Label Classification) | amazon_grocery, amazon_video, movielens_binary | F1 |
-| Rank (Ranking) | amazon_beauty, gowalla, ml_10m, ... | NDCG / Recall |
-| Seq (Sequential) | amazon_cds, diginetica, amazon_kindle | MRR |
-
-### EvalSet (49 datasets, 2012–2025)
-
-| Category | Datasets | Metric |
-|----------|----------|--------|
-| CTR | acquire_valued_shoppers, avazu_ctr, criteo, ... | AUC |
-| R&S | beeradvocate, elo_merchant, home_depot, ... | RMSE |
-| Rank | recsys_2018_spotify, expedia, h_and_m, ... | NDCG / Recall |
-| MLC | airbnb, santander_product, ... | F1 / NDCG |
-| Seq | diginetica_session, merrec_c2c, ... | MRR |
-
-### Data Structure
+### Data Format
 
 Each dataset follows a uniform structure:
 
 ```
-competitions/{dataset_id}/
+{dataset_id}/
 ├── data/
 │   ├── public/
 │   │   ├── train.csv (or .json)
@@ -362,81 +155,73 @@ competitions/{dataset_id}/
 │   │   ├── sample_submission.csv
 │   │   └── description.md
 │   └── private/
-│       └── answers.csv          # Ground truth (never exposed to agent)
-├── utils/
-│   ├── metric.py                # Grading function
-│   └── prepare.py               # Data preparation script
-└── info/
-    └── config.yaml              # Metadata (metric name, baseline score)
+│       └── answers.csv          # Ground truth (hidden from agent)
+└── utils/
+    ├── metric.py                # Grading function
+    └── prepare.py               # Data preparation
 ```
+
+Datasets will be available on Google Drive (link TBD).
 
 ---
 
-## 🔄 Reproducibility
+## Advanced Usage
 
-### Environment
+### Checkpoint & Resume
+
+The agent saves checkpoints after each step. To resume:
+
+```python
+from ct_coevo import CTCoEvoAgent
+
+agent = CTCoEvoAgent(
+    dataset_name="ml_1m",
+    data_dir="/path/to/data/public",
+    api_key="YOUR_API_KEY",
+    model="your-model",
+    base_url="https://api.example.com/v1",
+    workspace_dir="/path/to/existing/workspace",  # Resume from checkpoint
+)
+result = agent.run()
+```
+
+### Long Runs with tmux
 
 ```bash
-# Exact environment reproduction
-conda env create -f environment.yml
-conda activate CT-COEVO
+tmux new-session -d -s ctcoevo \
+    "conda activate CT-COEVO && python -m ct_coevo.runner --mode evo --dataset ml_1m \
+     --api-key KEY --api-url URL --model MODEL"
+
+# Monitor
+tmux attach -t ctcoevo
 ```
 
-### Random Seeds
+### Tool Call Format
 
-The agent sets the following seeds for reproducibility:
-- Python `random.seed(42)`
-- NumPy `np.random.seed(42)`
-- PyTorch `torch.manual_seed(42)`
-- CUDA `torch.cuda.manual_seed_all(42)`
+The agent outputs JSON arrays for tool selection:
 
-### API Configuration
-
-CT-COEVO uses OpenAI-compatible APIs. Configure via:
-
-| Parameter | Description | Example |
-|-----------|-------------|---------|
-| `--api-key` | API key | `sk-xxx` |
-| `--api-url` | Base URL | `https://api.example.com/v1` |
-| `--model` | Model ID | `deepseek-ai/DeepSeek-V3.2` |
-
-### Expected Results
-
-The paper reports results on 83 datasets (34 EvoSet + 49 EvalSet). Due to LLM API variability, exact scores may differ, but the agent should:
-
-1. **Evo Mode**: Successfully complete the co-evolution loop
-   - Memory grows with Experiential heuristics
-   - Toolkit grows with Temporary tools; effective ones promoted to Global
-   - Agent learns to use `create_tool` for training (not just `python`)
-
-2. **Eval Mode**: Transfer evolved knowledge to new tasks
-   - Agent retrieves relevant Experiential memories
-   - Agent reuses Global tools from the toolkit
-   - Performance should exceed task-agnostic baselines
-
-### Checking Results
-
-```bash
-# View run results
-cat ct_coevo/log/{dataset}-{timestamp}/results.json
-
-# View message log (agent reasoning)
-cat ct_coevo/log/{dataset}-{timestamp}/message_log.jsonl | python3 -m json.tool
-
-# View checkpoint
-cat ct_coevo/workspace/{dataset}-{timestamp}/checkpoint.json | python3 -m json.tool
-
-# View evolved memory
-ls ct_coevo/state/global/memory/
-
-# View evolved toolkit
-cat ct_coevo/state/global/toolkit/toolkit_items.json | python3 -m json.tool
+```json
+[{
+  "tool_id": "tool_xxx",
+  "config": {},
+  "name": "deepfm_v1",
+  "code": "import torch\n...",
+  "description": "DeepFM for CTR prediction",
+  "review_time": 1800
+}]
 ```
+
+| Field | Description |
+|-------|-------------|
+| `tool_id` | Target tool ID |
+| `config` | Configuration parameters |
+| `name` | Tool name (for `create_tool`) |
+| `code` | Python source code (for `create_tool` / `edit_tool`) |
+| `description` | Tool description (for `create_tool`) |
+| `review_time` | Seconds before returning logs. `-1` = wait forever (default). Recommended: `1800` for training. |
 
 ---
 
-## 📄 License
+## License
 
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
-
----
+MIT License. See [LICENSE](LICENSE).
