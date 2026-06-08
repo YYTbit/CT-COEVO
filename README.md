@@ -5,7 +5,7 @@
 ### An Autonomous Agent for Recommender System Design via Context-Tool Co-Evolution
 
 <p>
-<a href="https://arxiv.org/abs/xxxx.xxxxx"><img src="https://img.shields.io/badge/arXiv-xxxx.xxxxx-b31b1b.svg" alt="arXiv"></a>
+<a href="https://arxiv.org/abs/xxxx.xxxxx"><img src="https://img.shields./data/yangyingtao02/els-cas-templates.zipio/badge/arXiv-xxxx.xxxxx-b31b1b.svg" alt="arXiv"></a>
 <a href="#"><img src="https://img.shields.io/badge/Python-3.10+-blue.svg" alt="Python"></a>
 <a href="#"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License"></a>
 <a href="#"><img src="https://img.shields.io/badge/EMNLP-2025-purple.svg" alt="EMNLP"></a>

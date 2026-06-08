@@ -7,7 +7,7 @@ from ct_coevo import CTCoEvoAgent
 agent = CTCoEvoAgent(
     dataset_name="recsys_2018_spotify",
     data_dir="/data/yangyingtao02/RECDEVBENCH/recdevbench/evalset/recsys_2018_spotify/data/public",
-    api_key="sk-cvbft3yx5jjede999b4u370ty9orqklr28xl72ydzb0q0dca",
+    api_key="YOUR_API_KEY",
     model="mimo-v2.5",
     base_url="https://api.xiaomimimo.com/v1",
     timeout_sec=86400,
