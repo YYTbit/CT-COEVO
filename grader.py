@@ -1,7 +1,7 @@
 """
 grader.py — Grading interface for CT-COEVO.
 
-Loads metric.py from RECDEVBENCH evalset and grades submissions.
+Loads metric.py from RecDevBench and grades submissions.
 """
 
 import importlib.util
