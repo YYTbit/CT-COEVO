@@ -1,5 +1,5 @@
 """
-Scalable Algorithmic Toolkit (K) — Paper Section 4.1.2
+Scalable Algorithmic Toolkit (K)
 
 Four types:
   - Base Tools (K_base): Immutable execution primitives
