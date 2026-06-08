@@ -10,17 +10,15 @@
 
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10+-3776AB.svg?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-28A745.svg?style=for-the-badge)](LICENSE)
-[![arXiv](https://img.shields.io/badge/arXiv-Paper-b31b1b.svg?style=for-the-badge&logo=arxiv)](https://arxiv.org/abs/xxxx.xxxxx)
 
 <br>
 
-<img src="docs/framework.png" alt="CT-COEVO Framework" width="90%">
+<img src="docs/overview.png" alt="CT-COEVO Overview" width="90%">
 
-<br>
-
-**CT-COEVO** is an autonomous LLM-based agent that tackles recommendation competitions end-to-end.
-<br>
-It uniquely **co-evolves** its contextual memory and algorithmic toolkit across tasks, achieving continuous improvement without human intervention.
+<p><i>
+Existing agents lack recommendation-specific toolsets and domain knowledge, causing them to struggle on recommendation tasks.
+CT-COEVO addresses this through context–tool co-evolution on RecDevBench's EvoSet (warm-up) and EvalSet (evaluation).
+</i></p>
 
 </div>
 
@@ -28,27 +26,29 @@ It uniquely **co-evolves** its contextual memory and algorithmic toolkit across 
 
 ## 📖 Table of Contents
 
-- [Why CT-COEVO?](#-why-ct-coevo)
-- [How It Works](#-how-it-works)
+- [Overview](#-overview)
+- [Architecture](#-architecture)
 - [Project Structure](#-project-structure)
 - [Installation](#-installation)
 - [Usage](#-usage)
-- [Architecture Deep Dive](#-architecture-deep-dive)
+- [Key Mechanisms](#-key-mechanisms)
 - [Benchmark](#-benchmark)
+- [Experimental Results](#-experimental-results)
 - [Advanced](#-advanced)
 - [License](#-license)
 
 ---
 
-## 🎯 Why CT-COEVO?
+## 🎯 Overview
 
-Existing automated ML agents (AIDE, DS-Agent, MLE-Agent) treat each task in isolation — they start from scratch every time. This means:
+CT-COEVO is an autonomous LLM-based agent that tackles recommendation competitions end-to-end. Unlike existing agents that treat each task in isolation, CT-COEVO **co-evolves** two components across tasks:
 
-- ❌ No transfer of knowledge across tasks
-- ❌ Repeatedly making the same mistakes
-- ❌ No growth in algorithmic capabilities
+- **Contextual Memory (M)** — accumulates transferable heuristics from past experiments
+- **Algorithmic Toolkit (K)** — grows a library of reusable algorithm tools
 
-**CT-COEVO** solves this with **co-evolution**:
+This enables the agent to improve over time: lessons learned on early tasks directly boost performance on later ones.
+
+### Why Co-Evolution?
 
 | | Traditional Agents | CT-COEVO |
 |---|---|---|
@@ -59,41 +59,32 @@ Existing automated ML agents (AIDE, DS-Agent, MLE-Agent) treat each task in isol
 
 ---
 
-## ⚙️ How It Works
+## 🏗️ Architecture
 
-The agent operates in a loop inspired by reinforcement learning principles. At each step:
+<div align="center">
+<img src="docs/architecture.png" alt="CT-COEVO Architecture" width="85%">
+</div>
 
-### Step 1: Extract Context
+<br>
 
-```
-E_t = Extract(q, o_{t-1}; M)
-```
+Each step runs a closed loop:
 
-The agent queries its hierarchical memory **M** to retrieve the **K** most relevant experiences — past successes, failures, and transferable heuristics.
+**Read & Retrieve → Step Planning → Tool Selection & Configuration → Experimentation → Insight Distillation**
 
-### Step 2: Select & Configure Tool
+Three co-evolution mechanisms link Hierarchical Memory (**M**) and Scalable Toolset (**K**):
 
-```
-(τ_t, θ_t) = π(q, E_t; K)
-```
+1. Context drives tool evolution
+2. Tool execution enriches memory
+3. Both solidify into reusable assets
 
-Based on the task and retrieved context, the LLM selects a tool from toolkit **K** and generates configuration (e.g., PyTorch training code).
+### Core Loop (Paper Eq. 1–4)
 
-### Step 3: Execute
-
-```
-o_t = Experiment(τ_t, θ_t; D)
-```
-
-The tool runs in an isolated workspace. Results (logs, submission files) are captured.
-
-### Step 4: Distill
-
-```
-M ← M ∪ {Distill(q, τ_t, θ_t, o_t)}
-```
-
-The LLM synthesizes the execution into a new memory entry — what was tried, what happened, and the key lesson.
+| Step | Equation | Description |
+|------|----------|-------------|
+| **Extract** | `E_t = Extract(q, o_{t-1}; M)` | Retrieve relevant memories |
+| **Select** | `(τ_t, θ_t) = π(q, E_t; K)` | Choose tool + configuration |
+| **Execute** | `o_t = Experiment(τ_t, θ_t; D)` | Run tool in isolated workspace |
+| **Distill** | `M ← M ∪ {Distill(...)}` | Store results as new memories |
 
 ### Post-Task Consolidation
 
@@ -131,24 +122,29 @@ CT-COEVO/
 │   ├── runner.py               #   CLI entry point
 │   └── evolution_loop.py       #   Long-run evolution engine
 │
-├── docs/
-│   └── framework.png           #   Architecture diagram
+├── docs/                       # Paper figures
+│   ├── overview.png            #   Figure 1: Motivation
+│   ├── architecture.png        #   Figure 2: Architecture
+│   ├── perf_curve.png          #   Figure 4: Performance over time
+│   ├── tool_count.png          #   Figure 5: Global tool growth
+│   ├── tool_usage.png          #   Figure 6: Tool usage breakdown
+│   └── memory_similarity.png   #   Figure 7: Memory retrieval quality
 │
-├── requirements.txt            #   Python dependencies
-├── LICENSE                     #   MIT License
-└── README.md                   #   This file
+├── requirements.txt            # Python dependencies
+├── LICENSE                     # MIT License
+└── README.md                   # This file
 ```
 
 ### Key Components
 
-| File | Lines | Description |
-|------|-------|-------------|
-| `agent.py` | ~1100 | Core loop: extract → select → execute → distill |
-| `memory.py` | ~300 | Three-tier memory with markdown file storage |
-| `toolkit.py` | ~200 | Four-tier toolkit with promotion/pruning |
-| `prompts.py` | ~570 | All 11 prompt templates aligned with paper |
-| `grader.py` | ~100 | Loads `metric.py` from benchmark to grade submissions |
-| `runner.py` | ~160 | CLI orchestrating 83 datasets (34 Evo + 49 Eval) |
+| File | Description |
+|------|-------------|
+| `agent.py` | Core loop: extract → select → execute → distill |
+| `memory.py` | Three-tier memory with markdown file storage |
+| `toolkit.py` | Four-tier toolkit with promotion/pruning |
+| `prompts.py` | All 11 prompt templates aligned with paper |
+| `grader.py` | Loads `metric.py` from benchmark to grade submissions |
+| `runner.py` | CLI orchestrating 83 datasets (34 Evo + 49 Eval) |
 
 ---
 
@@ -290,41 +286,19 @@ agent.run()
 
 ---
 
-## 🏗️ Architecture Deep Dive
+## 🔬 Key Mechanisms
 
 ### Hierarchical Contextual Memory (M)
 
 Three memory types with increasing specificity:
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Memory Hierarchy                         │
-│                                                             │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │  Experiential (Exper.)                                │  │
-│  │  "Use pairwise loss for ranking metrics"              │  │
-│  │  → Transferable across tasks                          │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                          ▲                                  │
-│                     Distill                                 │
-│                          │                                  │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │  Experimental (Expt.)                                 │  │
-│  │  "Tried LightGBM on sparse IDs → failed"             │  │
-│  │  → Per-task observations                              │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                          ▲                                  │
-│                     Observe                                 │
-│                          │                                  │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │  Execution (Exec.)                                    │  │
-│  │  "Trained DeepFM 100 epochs, loss=0.45"              │  │
-│  │  → Per-tool traces (attached to tool records)         │  │
-│  └───────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
-```
+| Type | Symbol | What It Stores | Example |
+|------|--------|----------------|---------|
+| **Experiential** | `Exper.` | Transferable heuristics | "Use pairwise loss for ranking metrics" |
+| **Experimental** | `Expt.` | Per-task observations | "Tried LightGBM on sparse IDs → failed" |
+| **Execution** | `Exec.` | Per-tool traces | "Trained DeepFM 100 epochs, loss=0.45" |
 
-**Storage**: Each memory item is a markdown file with title, summary, and body.
+Each memory item is stored as a markdown file:
 
 ```markdown
 ---
@@ -338,44 +312,45 @@ summary: When the evaluation metric is NDCG or Recall, prefer BPR loss over BCE.
 Detailed conditions, actions, exceptions, and evidence...
 ```
 
+<div align="center">
+<img src="docs/memory_similarity.png" alt="Memory Similarity" width="60%">
+<br>
+<i>Average cosine similarity between retrieved memory entries and the current task context over steps.</i>
+</div>
+
 ### Scalable Algorithmic Toolkit (K)
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                    Toolkit Tiers                         │
-│                                                         │
-│  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌───────────┐  │
-│  │  Base   │  │  Meta   │  │ Global  │  │   Temp    │  │
-│  │ python  │  │ create  │  │ DeepFM  │  │ v1_trial  │  │
-│  │ bash    │  │ _tool   │  │ LightFM │  │ v2_trial  │  │
-│  │         │  │ edit    │  │ SASRec  │  │           │  │
-│  │         │  │ _tool   │  │  ...    │  │           │  │
-│  └─────────┘  └─────────┘  └─────────┘  └───────────┘  │
-│                                                         │
-│  Immutable    Creates new    Reviewed &    Experimental  │
-│  primitives   tools          reusable      variants      │
-│                                                         │
-│                            ▲           │                │
-│                            └───────────┘                │
-│                           Promote effective              │
-│                           Prune underperforming          │
-└─────────────────────────────────────────────────────────┘
-```
+| Tier | Symbol | Role | Examples |
+|------|--------|------|----------|
+| **Base** | `K_base` | Immutable primitives | `python`, `bash` |
+| **Meta** | `K_meta` | Tool-creating operations | `create_tool`, `edit_tool` |
+| **Global** | `K_global` | Reviewed, reusable pipelines | `deepfm_v1`, `lightgcn` |
+| **Temporary** | `K_temp` | Experimental variants | `deepfm_v2_trial` |
+
+<div align="center">
+<img src="docs/tool_count.png" alt="Tool Count" width="55%">
+<br>
+<i>Number of global tools in K_global over steps.</i>
+</div>
+
+<div align="center">
+<img src="docs/tool_usage.png" alt="Tool Usage" width="55%">
+<br>
+<i>Tool usage breakdown across tool types.</i>
+</div>
 
 ### Agent-Tool Interaction
 
 The agent communicates with tools via JSON:
 
 ```json
-[
-  {
-    "tool_id": "tool_1780763698112_2",
-    "name": "deepfm_v1",
-    "code": "import torch\nimport torch.nn as nn\n...",
-    "description": "DeepFM model for CTR prediction with GPU training",
-    "review_time": 1800
-  }
-]
+[{
+  "tool_id": "tool_1780763698112_2",
+  "name": "deepfm_v1",
+  "code": "import torch\nimport torch.nn as nn\n...",
+  "description": "DeepFM model for CTR prediction with GPU training",
+  "review_time": 1800
+}]
 ```
 
 | Field | Description |
@@ -426,7 +401,13 @@ Each dataset follows a uniform structure:
 
 ---
 
-## 🔬 Advanced
+## 📈 Experimental Results
+
+<div align="center">
+<img src="docs/perf_curve.png" alt="Performance Curve" width="60%">
+<br>
+<i>Normalized score over 24 hours on EvalSet.</i>
+</div>
 
 ### Two Operating Modes
 
@@ -434,6 +415,10 @@ Each dataset follows a uniform structure:
 |------|---------|------------------|----------|
 | **Evo** | Build capabilities | Evolve (grow & improve) | EvoSet (34) |
 | **Eval** | Test transfer | Frozen from Evo phase | EvalSet (49) |
+
+---
+
+## 🔬 Advanced
 
 ### State Persistence
 
