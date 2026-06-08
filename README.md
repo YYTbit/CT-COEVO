@@ -69,12 +69,12 @@ This enables the agent to improve over time: lessons learned on early tasks dire
 
 Each step runs a closed loop:
 
-**Read & Retrieve → Step Planning → Tool Selection & Configuration → Experimentation → Insight Distillation**
+**Read & Retrieve & Step Planning → Tool Selection & Configuration → Experimentation → Insight Distillation**
 
 Three co-evolution mechanisms link Hierarchical Memory (**M**) and Scalable Toolset (**K**):
 
 1. Context drives tool evolution
-2. Tool execution enriches memory
+2. Tool execution feeds backs to evolve memory
 3. Both solidify into reusable assets
 
 ### Core Loop (Paper Eq. 1–4)
@@ -117,7 +117,7 @@ CT-COEVO/
 │   ├── agent.py                #   Main agent loop (Eq. 1–4)
 │   ├── memory.py               #   HierarchicalContextualMemory (M)
 │   ├── toolkit.py              #   ScalableAlgorithmicToolkit (K)
-│   ├── prompts.py              #   11 prompt templates (paper Listings 1–11)
+│   ├── prompts.py              #   prompt templates
 │   ├── grader.py               #   Grading interface (loads metric.py)
 │   ├── runner.py               #   CLI entry point
 │   └── evolution_loop.py       #   Long-run evolution engine
@@ -142,7 +142,7 @@ CT-COEVO/
 | `agent.py` | Core loop: extract → select → execute → distill |
 | `memory.py` | Three-tier memory with markdown file storage |
 | `toolkit.py` | Four-tier toolkit with promotion/pruning |
-| `prompts.py` | All 11 prompt templates aligned with paper |
+| `prompts.py` | Prompt templates |
 | `grader.py` | Loads `metric.py` from benchmark to grade submissions |
 | `runner.py` | CLI orchestrating 83 datasets (34 Evo + 49 Eval) |
 
