@@ -81,8 +81,8 @@ def grade_submission(
         if hasattr(mod, "grade"):
             score = float(mod.grade(submission, answers))
             return score, "ok"
-        elif hasattr(mod, "grade_with_dacode"):
-            result = mod.grade_with_dacode(submission, answers)
+        elif hasattr(mod, "grade_with_norm_score"):
+            result = mod.grade_with_norm_score(submission, answers)
             return float(result.get("raw_score", 0)), "ok"
         else:
             return None, "no_grade_function"
