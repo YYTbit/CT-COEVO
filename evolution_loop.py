@@ -1,10 +1,5 @@
 """
-Evolution Loop — I am the evolution engine.
-
-This script runs the agent repeatedly, observes failures,
-writes evolved memories, and iterates.
-
-Run in tmux for 10+ hours.
+Evolution Loop
 """
 
 import json
