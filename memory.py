@@ -1,5 +1,5 @@
 """
-Hierarchical Contextual Memory (M) — Paper Section 4.1.1
+Hierarchical Contextual Memory (M)
 
 Each item μ_i ∈ M is a 4-tuple:
   μ_i = <ttl_i, sum_i, bod_i, ℓ_i>
