@@ -5,13 +5,6 @@
 ### An Autonomous Agent for Recommender System Design via Context-Tool Co-Evolution
 
 <p>
-<a href="https://arxiv.org/abs/xxxx.xxxxx"><img src="https://img.shields./data/yangyingtao02/els-cas-templates.zipio/badge/arXiv-xxxx.xxxxx-b31b1b.svg" alt="arXiv"></a>
-<a href="#"><img src="https://img.shields.io/badge/Python-3.10+-blue.svg" alt="Python"></a>
-<a href="#"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License"></a>
-<a href="#"><img src="https://img.shields.io/badge/EMNLP-2025-purple.svg" alt="EMNLP"></a>
-</p>
-
-<p>
 <strong>CT-COEVO</strong> is an autonomous LLM-based agent that co-evolves its <em>contextual memory</em> (M) and <em>algorithmic toolkit</em> (K) across recommendation tasks to achieve state-of-the-art performance — without human intervention.
 </p>
 
@@ -59,7 +52,7 @@ M ← M ∪ {Distill(q, τ_t, θ_t, o_t)}    # Eq. 4: Memory distillation
 ## 💡 Key Innovations
 
 ### 1. Context-Tool Co-Evolution
-Unlike AIDE (tree-search) or DS-Agent (case-based reasoning), CT-COEVO **simultaneously evolves** its memory and toolkit. Successful tools get promoted to the global toolkit; failed experiments generate negative heuristics that prevent future mistakes.
+CT-COEVO **simultaneously evolves** its memory and toolkit. Successful tools get promoted to the global toolkit; failed experiments generate negative heuristics that prevent future mistakes.
 
 ### 2. Hierarchical Contextual Memory
 Three-tier memory design enables coarse-to-fine retrieval:
@@ -164,7 +157,7 @@ cd /path/to/ct_coevo
 
 python runner.py \
     --mode evo \
-    --dataset ml_1m \
+    --dataset <evoset_dataset_name> \
     --api-key YOUR_API_KEY \
     --api-url https://api.example.com/v1 \
     --model your-model-name \
@@ -176,7 +169,7 @@ python runner.py \
 ```bash
 python runner.py \
     --mode eval \
-    --dataset airbnb_recruiting_new_user_bookings \
+    --dataset <evalset_dataset_name> \
     --api-key YOUR_API_KEY \
     --api-url https://api.example.com/v1 \
     --model your-model-name
@@ -233,7 +226,7 @@ The agent saves checkpoints after each step. To resume a crashed run:
 from ct_coevo import CTCoEvoAgent
 
 agent = CTCoEvoAgent(
-    dataset_name="recsys_2018_spotify",
+    dataset_name=<dataset_name>,
     data_dir="/path/to/data/public",
     api_key="sk-xxx",
     model="your-model",
@@ -366,7 +359,7 @@ Filename: `{label}_{sanitized_title}.md`
 
 ### Data Structure
 
-Each competition follows a uniform structure:
+Each dataset follows a uniform structure:
 
 ```
 competitions/{dataset_id}/
@@ -450,29 +443,8 @@ cat ct_coevo/state/global/toolkit/toolkit_items.json | python3 -m json.tool
 
 ---
 
-## 📜 Citation
-
-```bibtex
-@inproceedings{ct-coevo-2025,
-    title     = {CT-COEVO: An Autonomous Agent for Recommender System Design via Context-Tool Co-Evolution},
-    author    = {Anonymous Authors},
-    booktitle = {Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing (EMNLP)},
-    year      = {2025}
-}
-```
-
----
-
 ## 📄 License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
 ---
-
-<div align="center">
-
-**[Paper](https://arxiv.org/abs/xxxx.xxxxx)** ·
-**[Code](https://github.com/your-org/ct-coevo)** ·
-**[Benchmarks](https://github.com/your-org/rec-benchmarks)**
-
-</div>
