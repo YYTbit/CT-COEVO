@@ -90,9 +90,8 @@ EVOSET_DATASETS = {
 def resolve_data_dir(dataset_name: str) -> Optional[Path]:
     """Resolve the data directory for a dataset."""
     roots = [
-        Path("/data/yangyingtao02/new-rec-bench/novelrecbench/competitions"),
-        Path("/data/yangyingtao02/RECDEVBENCH/recdevbench/evalset"),
-        Path("/data/yangyingtao02/RECDEVBENCH/recdevbench/evoset"),
+        Path("./RECDEVBENCH/recdevbench/evalset"),
+        Path("./RECDEVBENCH/recdevbench/evoset"),
     ]
     for root in roots:
         candidate = root / dataset_name
