@@ -117,7 +117,7 @@ CT-COEVO/
 │   ├── agent.py                #   Main agent loop (Eq. 1–4)
 │   ├── memory.py               #   HierarchicalContextualMemory (M)
 │   ├── toolkit.py              #   ScalableAlgorithmicToolkit (K)
-│   ├── prompts.py              #   prompt templates
+│   ├── prompts.py              #   Prompt templates
 │   ├── grader.py               #   Grading interface (loads metric.py)
 │   ├── runner.py               #   CLI entry point
 │   └── evolution_loop.py       #   Long-run evolution engine
