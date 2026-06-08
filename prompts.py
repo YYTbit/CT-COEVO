@@ -1,7 +1,5 @@
 """
 prompts.py — Prompt templates for CT-COEVO.
-
-Paper-aligned (Listings 1-11) + minimal meta tool guidance.
 """
 
 from typing import Optional, List, Dict, Any
