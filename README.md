@@ -125,10 +125,7 @@ CT-COEVO/
 ├── docs/                       # Paper figures
 │   ├── overview.png            #   Figure 1: Motivation
 │   ├── architecture.png        #   Figure 2: Architecture
-│   ├── perf_curve.png          #   Figure 4: Performance over time
-│   ├── tool_count.png          #   Figure 5: Global tool growth
-│   ├── tool_usage.png          #   Figure 6: Tool usage breakdown
-│   └── memory_similarity.png   #   Figure 7: Memory retrieval quality
+│   └── bench_split.png         #   Figure 3: Benchmark category distribution
 │
 ├── requirements.txt            # Python dependencies
 ├── LICENSE                     # MIT License
@@ -312,12 +309,6 @@ summary: When the evaluation metric is NDCG or Recall, prefer BPR loss over BCE.
 Detailed conditions, actions, exceptions, and evidence...
 ```
 
-<div align="center">
-<img src="docs/memory_similarity.png" alt="Memory Similarity" width="60%">
-<br>
-<i>Average cosine similarity between retrieved memory entries and the current task context over steps.</i>
-</div>
-
 ### Scalable Algorithmic Toolkit (K)
 
 | Tier | Symbol | Role | Examples |
@@ -326,18 +317,6 @@ Detailed conditions, actions, exceptions, and evidence...
 | **Meta** | `K_meta` | Tool-creating operations | `create_tool`, `edit_tool` |
 | **Global** | `K_global` | Reviewed, reusable pipelines | `deepfm_v1`, `lightgcn` |
 | **Temporary** | `K_temp` | Experimental variants | `deepfm_v2_trial` |
-
-<div align="center">
-<img src="docs/tool_count.png" alt="Tool Count" width="55%">
-<br>
-<i>Number of global tools in K_global over steps.</i>
-</div>
-
-<div align="center">
-<img src="docs/tool_usage.png" alt="Tool Usage" width="55%">
-<br>
-<i>Tool usage breakdown across tool types.</i>
-</div>
 
 ### Agent-Tool Interaction
 
@@ -367,13 +346,11 @@ The agent communicates with tools via JSON:
 
 The agent is evaluated on **83 recommendation competition datasets** spanning 5 task categories.
 
-| Category | Task Type | Evaluation Metric | #EvoSet | #EvalSet |
-|----------|-----------|-------------------|---------|----------|
-| **R&S** | Rating & Scoring | RMSE | 12 | 5 |
-| **CTR** | Click-Through Rate | AUC | 7 | 12 |
-| **Rank** | Ranking | NDCG / Recall | 9 | 10 |
-| **MLC** | Multi-Label Classification | F1 | 3 | 2 |
-| **Seq** | Sequential Recommendation | MRR | 3 | 2 |
+<div align="center">
+<img src="docs/bench_split.png" alt="Benchmark Category Distribution" width="70%">
+<br>
+<i>Category distribution of RecDevBench.</i>
+</div>
 
 - **EvoSet** (34 datasets, 1997–2010): Classical recommendation datasets for agent evolution
 - **EvalSet** (49 datasets, 2012–2025): Recent competitions for transfer evaluation
@@ -402,12 +379,6 @@ Each dataset follows a uniform structure:
 ---
 
 ## 📈 Experimental Results
-
-<div align="center">
-<img src="docs/perf_curve.png" alt="Performance Curve" width="60%">
-<br>
-<i>Normalized score over 24 hours on EvalSet.</i>
-</div>
 
 ### Two Operating Modes
 
