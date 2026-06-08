@@ -1,13 +1,7 @@
 """
 agent.py — CT-COEVO Agent
 
-Strictly follows the paper:
-  - Uses all 11 prompt templates from prompts.py
-  - Workspace isolation: copy public files to workspace
-  - Multi-tool parallel call: agent can call multiple tools per step
-  - Co-evolution loop: Eq. 1-4
-
-Agent loop (Paper Eq. 1-4):
+Agent loop:
   E_t = Extract(q, o_{t-1}; M)
   (τ_t, θ_t) = π(q, E_t; K)
   o_t = Experiment(τ_t, θ_t; D)
