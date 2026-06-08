@@ -120,7 +120,7 @@ CT-COEVO/
 │   ├── prompts.py              #   Prompt templates
 │   ├── grader.py               #   Grading interface (loads metric.py)
 │   ├── runner.py               #   CLI entry point
-│   └── evolution_loop.py       #   Long-run evolution engine
+│   └── coevolution_loop.py       #   Long-run coevolution engine
 │
 ├── docs/                       # Paper figures
 │   ├── overview.pdf            #   Figure 1: Motivation (vector)
