@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+*.log
+
+# Runtime artifacts created by the agent
+ct_coevo/log/
+ct_coevo/workspace/
+ct_coevo/state/
