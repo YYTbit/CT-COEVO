@@ -137,7 +137,7 @@ normalization, or macro averaging yields the same top-ranked methods.
 | `netflix` | R&S | rmse | 2006 |
 | `rsc2009` | Seq | mrr | 2009 |
 | `slashdot_zoo` | MLC | f1 | 2009 |
-| `steam_data` | R&S | rmse | n/a |
+| `steam_data` | R&S | rmse | 2009 |
 | `tafeng` | Seq | mrr | 2000 |
 | `wiki_vote` | MLC | f1 | 2008 |
 | `wikispeedia` | Seq | mrr | 2009 |
